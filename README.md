@@ -197,6 +197,7 @@ If you find this repository useful, please cite:
 @article{zhang2026ulxcot,
   title={Less Languages, Less Tokens: An Efficient Unified Logic Cross-lingual Chain-of-Thought Reasoning Framework},
   author={Zhang, Chenyuan and Chen, Qiguang and Chen, Xie and Tian, Zhuotao and Xing, Bowen and Zhang, Meishan and Qin, Libo and Hu, Baotian and Zhang, Min},
+  booktitle={Proc. of ACL 2026}
   year={2026}
 }
 ```
