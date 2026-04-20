@@ -1,0 +1,4 @@
+[submodule "hidden_vllm"]
+	path = hidden_vllm
+	url = https://github.com/chenyuanTKCY/vllm.git
+	branch = hidden_states_fetch_v0.5.5

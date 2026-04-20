@@ -1,0 +1,20 @@
+# Generated outputs and experiment artifacts
+mgsm/output/
+polymath/output/
+polymath/output_consistency/
+polymath/output_orign/
+polymath/Qwen_7B/
+polymath/RL-qwen-7B*/
+polymath/new_RL-*/
+polymath/llama_8b/
+polymath/qwen2.5_3b/
+MMLU-ProX-Lite_2col_tsv_by_lang/new_RL-*/
+MMATH/.git/
+MMATH/train/
+MMATH/mmath/
+
+# Runtime artifacts
+**/*.jsonl
+**/accuracy*.txt
+**/cost_summary*.txt
+**/__pycache__/
