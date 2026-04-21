@@ -222,6 +222,6 @@ If you find this repository useful for your research, please consider citing:
 
 <div align="center">
 
-Please create [GitHub issues here](https://github.com/chenyuanTKCY/UL-XCoT/issues) or email [**Chenyuan Zhang**](mailto:cyzhang@stu.hit.edu.cn) if you have any questions or suggestions.
+Please email [**Chenyuan Zhang**](mailto:cyzhang@stu.hit.edu.cn) and [**Libo Qin**](mailto:qinlibo@hit.edu.cn) if you have any questions or suggestions.
 
 </div>
