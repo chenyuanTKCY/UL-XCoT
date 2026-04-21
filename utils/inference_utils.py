@@ -17,15 +17,9 @@ import threading
 import json
 import os
 import numpy as np
-# import torch.distributed as dist
-# from torch.nn.parallel import DistributedDataParallel as DDP
-# from .dynamic_barrier import DynamicBarrier, consume_streamer, consume_streamer_self_consistency, EarlyStop
 from .config  import ms_save_dir, gamma_save_dir, \
 ma_diff_save_dir, mgsm_LANG_DICT, mgsm_output_path, polymath_output_path, polymath_LANG_DICT, polymath_LANG_NOTE_DICT
-# from .expression_processor import HookModule
 from .early_stop import VoteManager, ConfPerReqLogitsProcessor, LogicObject
-# from transformers import PreTrainedModel
-# from transformers import AutoModelForCausalLM, AutoTokenizer, TextIteratorStreamer
 from typing import Optional, List, Tuple, Union, Dict
 from collections import defaultdict
 from queue import Queue
@@ -69,15 +63,12 @@ class ModelInference():
         default_kwargs = {
             "tensor_parallel_size": len(os.environ.get("CUDA_VISIBLE_DEVICES", "0").split(",")),
             "enable_prefix_caching": True,
-            # "use_prefix_caching": False,
             "trust_remote_code": True,
             "use_v2_block_manager":True, 
             "enforce_eager": True,  # 确保不使用 CUDA Graph，避免与 hook 冲突
-            # "disable_sliding_window": True,  # 禁用 sliding window，确保每次生成都经过完整的前向传播
         }
         print(f"---------------------{default_kwargs['tensor_parallel_size']} GPU(s) will be used for vLLM inference---------------------")
         default_kwargs.update(vllm_kwargs)
-        # default_kwargs["enable_prefix_caching"] = False
 
         print("Initializing vLLM engine...")
         llm_init_start = time.time()
@@ -106,7 +97,6 @@ class ModelInference():
                   group_id:int = 0, max_token_nums: int = 1024, lamda: float = 0.4, seed: int = 42, prune_ratio: float = 0.6, window_size_scaling: int = 3, sampling_size:int = 3, dataset:str = "polymath"):
         # language_query_set = np.array(language_query_set).transpose(1,0,2).tolist()
         try:
-            # 先检查是否可以转换
             test_arr = np.array(language_query_set, dtype=object)
             print(f"形状检查: {test_arr.shape}")
             
@@ -128,9 +118,6 @@ class ModelInference():
                 break
             if (mode == "translate_to_EN" or mode == "translate_to_EN_sc") and (lang_id == 3 or lang_id < 2):
                 continue
-            # if mode == "ours" and lang_id != 13:
-            #     continue
-
 
             if mode in BATCH_MODES:
                 if mode == "CLSP_acc":
@@ -165,8 +152,6 @@ class ModelInference():
                                                     desc="Processing language query"):
                     if mode in ["CLSP_cost", "autocap_cost", "self_consistency_cost", "ours", "CLSP_acc", "translate_to_EN_sc"] and query_id % 100 != 1:
                         continue
-                    # if mode == "ours" and query_id != 41:
-                    #     continue
                     self._inference(
                         query_id=query_id,
                         lang_id=lang_id,
@@ -231,7 +216,6 @@ class ModelInference():
         }
         if mode == "ours" or mode == "ablation_top_k" or mode == "stbon" or mode == "SC_mo":
             print("---------------------------+++EARLY STOP ENABLED+++---------------------------")
-            # print(f"temp: {self.temperature}, top_p: {self.top_p}, max_tokens: {max_token_nums}")
             sampling_params = SamplingParams(
                 temperature=self.temperature,
                 top_p=self.top_p,
@@ -260,7 +244,6 @@ class ModelInference():
         # Generate all traces at once
         print(f"Generating {budget} traces...", sampling_params)
         generation_start = time.time()
-        # vllm_outputs = self.llm.generate([prompts[i] for i in range(budget)], sampling_params_list)
         vllm_outputs = self.llm.generate(prompts, sampling_params)
         output.generation_time = time.time() - generation_start
         
@@ -269,7 +252,6 @@ class ModelInference():
         
         def process_batch_results_offline(batch_outputs,  manager) -> Dict[str, Any]:
             """Process batch results from vLLM for offline mode"""
-            # question_outputs = batch_outputs[0].outputs
             question_outputs = []
             for output_list in batch_outputs:
                 question_outputs += output_list.outputs
@@ -354,7 +336,6 @@ class ModelInference():
                 sample_lang_ids.append(int(query['lang_id']))
                 messages.append(message)
         elif mode == "autocap_auxiliary":
-            # print(mode)
             for i, query in enumerate(queries):
                 lang_name_contraction = list(self.lang_dict.keys())[int(query['lang_id'])]
                 # Construct the system instruction
@@ -412,7 +393,6 @@ class ModelInference():
         else:
             
             for i, query in enumerate(queries):
-                # print(query)
                 lang_name = list(self.lang_dict.values())[int(query['lang_id'])]
                 if mode == "translate_to_EN" or mode == "translate_to_EN_sc":
                     lang_name = "English"
@@ -527,5 +507,3 @@ class ModelInference():
         # 追加写入 JSONL
         with open(output_file, 'a', encoding='utf-8') as f:
             f.write(json.dumps(data_to_save, ensure_ascii=False) + "\n")
-
-

@@ -50,22 +50,6 @@ class LogicObject:
             torch.Tensor:
                 Processed hidden states with the same shape as input.
         """
-        # print(hidden_states.shape)
-
-        # print(">>> process_hidden_states called")
-        # print(">>> type:", type(hidden_states))
-
-        # if isinstance(hidden_states, torch.Tensor):
-        #     print(">>> hidden_states.shape:", hidden_states.shape)
-        # elif isinstance(hidden_states, (list, tuple)):
-        #     print(">>> len(hidden_states):", len(hidden_states))
-        #     if len(hidden_states) > 0:
-        #         print(">>> hidden_states[0].shape:", hidden_states[0].shape)
-        # elif isinstance(hidden_states, dict):
-        #     print(">>> hidden_states.keys():", hidden_states.keys())
-        # else:
-        #     print(">>> unknown hidden_states type")
-
         num_layers, batch_size, hidden_size = hidden_states.shape
 
         # Layers to process (example: 5 → 14 inclusive)
@@ -252,7 +236,6 @@ class ConfPerReqLogitsProcessor:
           to collect and pass all traces together.
         """
         seq_id = seq_id % self.sampling_size
-        # print(hidden_states.shape)
 
         # 1) Update global state & voting logic
         if (not self.manager.voting_done) and (hidden_states is not None):
@@ -384,7 +367,6 @@ class ConfPerReqLogitsProcessor:
                 # Divergence detected -> select the top-K most central traces.
                 self.manager.divergency_step += 1
                 local_ids = self._detect_best_multi(coe_vals, k=k)
-                # print(f"[Voting] Diverged at length {curr_len}. ")
             else:
                 # No divergence detected -> randomly select K traces.
                 self.manager.no_divergency_step += 1
@@ -450,10 +432,6 @@ class ConfPerReqLogitsProcessor:
         max_diff = diff.max().item()
         max_rel  = rel_diff.max().item()
         mean_rel = rel_diff.mean().item()
-
-        # print("vals:", vals)
-        # print("max diff:", max_diff, "mean diff:", diff.mean().item())
-        # print("max rel_diff:", max_rel, "mean rel_diff:", mean_rel)
 
         # First check absolute and relative thresholds.
         if not (max_diff > eps_abs and max_rel > eps_rel):
@@ -582,6 +560,4 @@ class CoEScoreInfo:
         _, mag_ave, _ = self.compute_CoE_Mag()
         _, ang_ave, _ = self.compute_CoE_Ang()
         return mag_ave - ang_ave
-
-
 
