@@ -14,16 +14,16 @@
 
 **Official repository for the UL-XCoT paper**
 
-Chenyuan Zhang, Qiguang Chen, Xie Chen, 
+Chenyuan Zhang, Qiguang Chen, Xie Chen,<br>
 Zhuotao Tian, Bowen Xing, Meishan Zhang, Libo Qin, Baotian Hu, Min Zhang
 
 </div>
 
-## 🔥 News
+<!-- ## 🔥 News
 
 - `v1.0` public release of the paper-facing repository.
 - The paper PDF is available in this repository at [paper/3459_Less_Languages_Less_Token.pdf](paper/3459_Less_Languages_Less_Token.pdf).
-- The release keeps the core code, lightweight benchmark inputs, and public scripts for UL-XCoT.
+- The release keeps the core code, lightweight benchmark inputs, and public scripts for UL-XCoT. -->
 
 ## 💡 Overview
 
