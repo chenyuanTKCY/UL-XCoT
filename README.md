@@ -1,83 +1,57 @@
-# UL-XCoT
+<div align="center">
 
-Official repository for the paper:
+# Less Languages, Less Tokens
 
-**Less Languages, Less Tokens: An Efficient Unified Logic Cross-lingual Chain-of-Thought Reasoning Framework**
+## UL-XCoT
+
+### An Efficient Unified Logic Cross-lingual Chain-of-Thought Reasoning Framework
+
+[![Paper](https://img.shields.io/badge/Paper-PDF-B31B1B?style=for-the-badge)](paper/3459_Less_Languages_Less_Token.pdf)
+![Version](https://img.shields.io/badge/Version-v1.0-2F6BFF?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Public%20Release-0A7F5A?style=for-the-badge)
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Task](https://img.shields.io/badge/Task-XCoT%20Reasoning-6A5ACD?style=for-the-badge)
+
+**Official repository for the UL-XCoT paper**
 
 Chenyuan Zhang, Qiguang Chen, Xie Chen, Zhuotao Tian, Bowen Xing, Meishan Zhang, Libo Qin, Baotian Hu, Min Zhang
 
-Paper PDF: [paper/3459_Less_Languages_Less_Token.pdf](paper/3459_Less_Languages_Less_Token.pdf)
+</div>
 
-## Overview
+## 🔥 News
 
-UL-XCoT is an efficient cross-lingual chain-of-thought (XCoT) self-consistency framework for multilingual reasoning.
-The method improves inference efficiency in two ways:
+- `v1.0` public release of the paper-facing repository.
+- The paper PDF is available in this repository at [paper/3459_Less_Languages_Less_Token.pdf](paper/3459_Less_Languages_Less_Token.pdf).
+- The release keeps the core code, lightweight benchmark inputs, and public scripts for UL-XCoT.
 
-- less languages: select a small candidate language set in a unified logic space
-- less tokens: prune low-quality reasoning trajectories during decoding with early stopping
+## 💡 Overview
 
-The paper evaluates UL-XCoT on:
+Cross-lingual chain-of-thought (XCoT) reasoning can improve multilingual problem solving, but it often introduces substantial inference overhead. UL-XCoT addresses this efficiency bottleneck from two complementary directions:
 
-- PolyMath across 18 languages
-- Global-MMLU-Lite across 29 languages
+1. **Less Languages**: route each query to a small set of helpful auxiliary languages in a unified logic space instead of reasoning over many languages.
+2. **Less Tokens**: prune low-quality reasoning trajectories during decoding with early stopping to reduce unnecessary token generation.
 
-using DeepSeek-R1-Distill-Qwen-7B as the main backbone.
+In this repository, UL-XCoT is mainly evaluated on:
 
-## Method Summary
+- **PolyMath** across 18 languages
+- **Global-MMLU-Lite / MMLU-ProX-Lite** style multilingual evaluation across 29 languages
 
-The repository is organized around the main stages of the paper:
+The main backbone used in the paper is **DeepSeek-R1-Distill-Qwen-7B**.
 
-1. Unified Logic Mechanism
-   Projects multilingual hidden states into a shared logic space so they can be compared across languages.
-2. Candidate Language Selection
-   Uses routing metadata to choose a small subset of helpful auxiliary languages for each query.
-3. Dynamic CoT Pruning
-   Monitors reasoning trajectories during decoding and early-stops low-quality branches.
-4. Voting
-   Aggregates the remaining trajectories to produce the final answer.
+## 🧠 Method
 
-## Repository Layout
+The repository is organized around four main stages of the framework:
 
-```text
-UL-XCoT/
-├── README.md
-├── requirements.txt
-├── process_query.py
-├── get_assistant_languages.py
-├── eval_answer.py
-├── get_cost.py
-├── dataset/
-├── scripts/
-├── utils/
-├── paper/
-└── hidden_vllm/    # git submodule
-```
+1. **Unified Logic Mechanism**  
+   Project multilingual hidden states into a shared logic space so reasoning behavior can be compared across languages.
+2. **Candidate Language Selection**  
+   Use routing metadata to select a small auxiliary-language set for each query.
+3. **Dynamic CoT Pruning**  
+   Monitor decoding trajectories and early-stop low-confidence branches.
+4. **Voting**  
+   Aggregate the remaining trajectories to produce the final prediction.
 
-Key files:
-
-- [process_query.py](process_query.py): main inference entry for UL-XCoT and retained baselines
-- [get_assistant_languages.py](get_assistant_languages.py): generates routing / candidate-language metadata
-- [eval_answer.py](eval_answer.py): evaluates answer accuracy
-- [get_cost.py](get_cost.py): summarizes token cost
-- [utils/language_router.py](utils/language_router.py): language routing logic
-- [utils/early_stop.py](utils/early_stop.py): dynamic pruning / early stopping logic
-- [utils/inference_utils.py](utils/inference_utils.py): inference wrapper
-
-## Lightweight Public Release
-
-This GitHub version is intentionally lightweight.
-Large generated outputs, parameter sweeps, cached reasoning traces, and heavyweight dataset payloads were removed.
-
-What remains:
-
-- the core code path for the paper
-- the retained public shell entry points
-- lightweight benchmark inputs and routing metadata
-- the paper PDF
-
-For dataset details, see [dataset/README.md](dataset/README.md).
-
-## Setup
+## 🎯 Installation
 
 ### 1. Clone the repository
 
@@ -99,12 +73,11 @@ conda env create -f environment.yml
 conda activate LangRouter
 ```
 
-The file [environment.yml](environment.yml) was exported from the original runtime environment used for this project.
+The file [environment.yml](environment.yml) was exported from the original runtime environment used in this project.
 
 ### 3. Install `hidden_vllm`
 
-`hidden_vllm` is a customized vLLM implementation used in this project to expose hidden states during decoding.
-It is required by the inference pipeline.
+`hidden_vllm` is a customized vLLM backend used to expose hidden states during decoding. It is required by the UL-XCoT inference pipeline.
 
 ```bash
 cd hidden_vllm
@@ -114,10 +87,7 @@ cd ..
 
 ### 4. Set runtime paths
 
-The public scripts no longer depend on hard-coded local machine paths.
-They use environment variables instead.
-
-Recommended variables:
+The public scripts use environment variables instead of machine-specific hard-coded paths.
 
 ```bash
 export ULXCOT_MODEL_PATH=/path/to/DeepSeek-R1-Distill-Qwen-7B
@@ -128,12 +98,11 @@ export VLLM_SRC=$PWD/hidden_vllm
 Notes:
 
 - `ULXCOT_MODEL_PATH` should point to the model directory or model identifier used for inference.
+- `PYTHON_BIN` should point to the Python executable in your runtime environment.
 - `VLLM_SRC` is added to `PYTHONPATH` by the retained shell scripts.
-- In the original paper environment, the main runtime lived in `/home/cyzhang/miniconda/envs/LangRouter/`.
-- `hidden_vllm` should be installed locally in that environment because it implements the hidden-state extraction used by UL-XCoT.
 - Some scripts assume a GPU environment similar to the paper setup.
 
-## Quick Start
+## 🚀 Quick Start
 
 ### 1. Generate routing metadata
 
@@ -141,9 +110,9 @@ Notes:
 bash scripts/get_assislan.sh
 ```
 
-This corresponds to candidate language selection metadata generation.
+This step prepares candidate-language routing information for later inference.
 
-### 2. Run UL-XCoT
+### 2. Run UL-XCoT inference
 
 ```bash
 bash scripts/infer.sh
@@ -158,7 +127,7 @@ bash scripts/translate_to_EN.sh
 bash scripts/infer_MMLU.sh
 ```
 
-### 4. Evaluate accuracy
+### 4. Evaluate answer accuracy
 
 ```bash
 export OPENAI_API_KEY=your_key_here
@@ -171,38 +140,78 @@ bash scripts/get_acc.sh
 bash scripts/get_cost.sh
 ```
 
-For script-level notes, see [scripts/README.md](scripts/README.md).
+For more script-level notes, see [scripts/README.md](scripts/README.md).
 
-## Dataset
+## 📦 Dataset
 
-The repository keeps only the lightweight subset required for code understanding and limited reproduction.
+This GitHub release is intentionally lightweight and keeps only the benchmark inputs and metadata needed for code understanding and limited reproduction.
 
-Main retained data:
+Main retained resources:
 
 - `dataset/polymath/input/`
 - `dataset/MMLU-ProX-Lite_2col_tsv_by_lang/*/{test,validation}.tsv`
 - `dataset/MMLU-ProX-Lite_2col_tsv_by_lang/routing_results_polymath_ds7b_new.json`
 
-See [dataset/README.md](dataset/README.md) for data provenance and role descriptions.
+For detailed data provenance, structure, and omitted artifacts, see [dataset/README.md](dataset/README.md).
 
-## Paper Assets
+## 🖨️ File Structure
 
-The paper PDF is stored in [paper/3459_Less_Languages_Less_Token.pdf](paper/3459_Less_Languages_Less_Token.pdf).
+```text
+UL-XCoT/
+├── README.md
+├── environment.yml
+├── requirements.txt
+├── process_query.py
+├── get_assistant_languages.py
+├── eval_answer.py
+├── get_cost.py
+├── dataset/
+│   ├── polymath/
+│   └── MMLU-ProX-Lite_2col_tsv_by_lang/
+├── scripts/
+│   ├── infer.sh
+│   ├── CLSP_acc.sh
+│   ├── self_consistency.sh
+│   ├── translate_to_EN.sh
+│   ├── infer_MMLU.sh
+│   ├── get_assislan.sh
+│   ├── get_acc.sh
+│   └── get_cost.sh
+├── utils/
+├── paper/
+└── hidden_vllm/
+```
 
-## Citation
+Key files:
 
-If you find this repository useful, please cite:
+- `process_query.py`: main inference entry for UL-XCoT and retained baselines
+- `get_assistant_languages.py`: candidate-language routing generation
+- `eval_answer.py`: answer evaluation
+- `get_cost.py`: token-cost statistics
+- `utils/language_router.py`: language routing logic
+- `utils/early_stop.py`: dynamic pruning / early stopping logic
+- `utils/inference_utils.py`: inference wrapper
+
+
+
+## ✒️ Citation
+
+If you find this repository useful for your research, please consider citing:
 
 ```bibtex
 @article{zhang2026ulxcot,
   title={Less Languages, Less Tokens: An Efficient Unified Logic Cross-lingual Chain-of-Thought Reasoning Framework},
   author={Zhang, Chenyuan and Chen, Qiguang and Chen, Xie and Tian, Zhuotao and Xing, Bowen and Zhang, Meishan and Qin, Libo and Hu, Baotian and Zhang, Min},
-  booktitle={Proc. of ACL 2026}
+  booktitle={Proc. of ACL 2026},
   year={2026}
 }
 ```
 
-## Acknowledgements
+## 🙏 Acknowledgements
 
-- The paper uses a customized vLLM-based backend tracked here as the `hidden_vllm` submodule.
-- Public release cleanup removed large experiment outputs so the repository can serve as a paper-facing code release.
+- The project uses a customized vLLM backend tracked as the `hidden_vllm` submodule.
+- This public release focuses on the core code path and paper-facing materials rather than full internal experiment outputs.
+
+## 📮 Contact
+
+Please create a GitHub issue in this repository if you have questions, suggestions, or reproduction-related feedback.
