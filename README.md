@@ -17,6 +17,10 @@
 Chenyuan Zhang, Qiguang Chen, Xie Chen,<br>
 Zhuotao Tian, Bowen Xing, Meishan Zhang, Libo Qin, Baotian Hu, Min Zhang
 
+[![Framework](paper/framework.png)](paper/framework.pdf)
+
+*Overview of the UL-XCoT framework.*
+
 </div>
 
 <!-- ## 🔥 News
