@@ -1,8 +1,8 @@
 <div align="center">
 
-# Less Languages, Less Tokens
+<!-- # Less Languages, Less Tokens -->
 
-## UL-XCoT
+## Less Languages, Less Tokens
 
 ### An Efficient Unified Logic Cross-lingual Chain-of-Thought Reasoning Framework
 
@@ -14,7 +14,8 @@
 
 **Official repository for the UL-XCoT paper**
 
-Chenyuan Zhang, Qiguang Chen, Xie Chen, Zhuotao Tian, Bowen Xing, Meishan Zhang, Libo Qin, Baotian Hu, Min Zhang
+Chenyuan Zhang, Qiguang Chen, Xie Chen, 
+Zhuotao Tian, Bowen Xing, Meishan Zhang, Libo Qin, Baotian Hu, Min Zhang
 
 </div>
 
@@ -34,7 +35,7 @@ Cross-lingual chain-of-thought (XCoT) reasoning can improve multilingual problem
 In this repository, UL-XCoT is mainly evaluated on:
 
 - **PolyMath** across 18 languages
-- **Global-MMLU-Lite / MMLU-ProX-Lite** style multilingual evaluation across 29 languages
+- **Global-MMLU-Lite** style multilingual evaluation across 29 languages
 
 The main backbone used in the paper is **DeepSeek-R1-Distill-Qwen-7B**.
 
@@ -146,7 +147,12 @@ For more script-level notes, see [scripts/README.md](scripts/README.md).
 
 This GitHub release is intentionally lightweight and keeps only the benchmark inputs and metadata needed for code understanding and limited reproduction.
 
-Main retained resources:
+The public `dataset/` directory currently centers on two multilingual reasoning benchmarks:
+
+- [`PolyMath`](https://huggingface.co/papers/2504.18428): an 18-language mathematical reasoning benchmark with four difficulty levels, used here as the main testbed for cross-lingual routing and token-efficient CoT inference
+- [`MMLU-ProX-Lite`](https://huggingface.co/datasets/li-lab/MMLU-ProX-Lite): a 29-language lightweight multilingual evaluation benchmark used to check whether UL-XCoT generalizes beyond the math-focused setting
+
+The retained files include:
 
 - `dataset/polymath/input/`
 - `dataset/MMLU-ProX-Lite_2col_tsv_by_lang/*/{test,validation}.tsv`
@@ -207,11 +213,15 @@ If you find this repository useful for your research, please consider citing:
 }
 ```
 
-## 🙏 Acknowledgements
-
-- The project uses a customized vLLM backend tracked as the `hidden_vllm` submodule.
-- This public release focuses on the core code path and paper-facing materials rather than full internal experiment outputs.
 
 ## 📮 Contact
 
-Please create a GitHub issue in this repository if you have questions, suggestions, or reproduction-related feedback.
+<div align="center">
+
+For questions, suggestions, or feedback:
+
+**Chenyuan Zhang**  
+📧 `cyzhang@stu.hit.edu.cn`  
+<!-- 💬 [Open an Issue](https://github.com/chenyuanTKCY/UL-XCoT/issues) -->
+
+</div>
