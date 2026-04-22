@@ -31,7 +31,7 @@ Cross-lingual chain-of-thought (XCoT) reasoning can improve multilingual problem
 In this repository, UL-XCoT is mainly evaluated on:
 
 - **PolyMath** across 18 languages
-- **Global-MMLU-Lite** style multilingual evaluation across 29 languages
+- **MMLU-ProX-Lite** style multilingual evaluation across 29 languages
 
 The main backbone used in the paper is **DeepSeek-R1-Distill-Qwen-7B**.
 
