@@ -82,12 +82,7 @@ def infer_language_with_model(
             with open("dataset/polymath/new_RL-qwen-7B_correct_0.8_0.6/autocap_auxiliary_new/10240/auxiliary_set.json", 
                       'r', 
                       encoding='utf-8') as f:
-                sampled_languages = json.load(f)
-        elif test_mode == "translate_to_EN":
-            sampled_languages = [[i] for i in range(len(polymath_LANG_LIST))]
-        elif test_mode == "translate_to_EN_sc":
-            num_languages = len(polymath_LANG_LIST)
-            sampled_languages = [[i] * sampling_size for i in range(num_languages)]           
+                sampled_languages = json.load(f)       
 
         if type(sampled_languages) is list:
             for query_id, query in enumerate(language_query_set):
@@ -178,8 +173,6 @@ def sequential_inference( model_path, sampled_quardruple, sampling_size=3,
     if dataset == "polymath":
 
         language_query_set = read_polymath(mode="infer", diff=query_diff)
-        if test_mode == "translate_to_EN" or test_mode == "translate_to_EN_sc":
-            language_query_set = read_polymath(mode="infer", diff=query_diff, translate_to_en=True)
     elif dataset == "MMLU":
         language_query_set = read_MMLU(mode="infer")
     run_inference(model_path=model_path, 

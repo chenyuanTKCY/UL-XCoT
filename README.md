@@ -120,7 +120,6 @@ bash scripts/infer.sh
 ```bash
 bash scripts/CLSP_acc.sh
 bash scripts/self_consistency.sh
-bash scripts/translate_to_EN.sh
 bash scripts/infer_MMLU.sh
 ```
 
@@ -174,7 +173,6 @@ UL-XCoT/
 │   ├── infer.sh
 │   ├── CLSP_acc.sh
 │   ├── self_consistency.sh
-│   ├── translate_to_EN.sh
 │   ├── infer_MMLU.sh
 │   ├── get_assislan.sh
 │   ├── get_acc.sh
@@ -198,7 +196,7 @@ Key files:
 
 ## ✒️ Citation
 
-If you find this repository useful for your research, please consider citing:
+If you find this idea useful for your research, please consider citing our:
 
 ```bibtex
 @article{zhang2026ulxcot,

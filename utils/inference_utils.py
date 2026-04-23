@@ -65,7 +65,7 @@ class ModelInference():
             "enable_prefix_caching": True,
             "trust_remote_code": True,
             "use_v2_block_manager":True, 
-            "enforce_eager": True,  # 确保不使用 CUDA Graph，避免与 hook 冲突
+            "enforce_eager": True,  
         }
         print(f"---------------------{default_kwargs['tensor_parallel_size']} GPU(s) will be used for vLLM inference---------------------")
         default_kwargs.update(vllm_kwargs)
@@ -95,62 +95,14 @@ class ModelInference():
                   sampled_set: List = None, ms_components: List = None, 
                   gamma_components: List =None, mode:str = "ours", diff:str = "high", 
                   group_id:int = 0, max_token_nums: int = 1024, lamda: float = 0.4, seed: int = 42, prune_ratio: float = 0.6, window_size_scaling: int = 3, sampling_size:int = 3, dataset:str = "polymath"):
-        # language_query_set = np.array(language_query_set).transpose(1,0,2).tolist()
-        try:
-            test_arr = np.array(language_query_set, dtype=object)
-            print(f"形状检查: {test_arr.shape}")
-            
-            language_query_set = np.array(language_query_set).transpose(1,0,2).tolist()
-        except ValueError as e:
-            print(f"数组转换错误: {e}")
-            print(f"数据类型: {type(language_query_set)}")
-        BATCH = 125
-        BATCH_MODES = {"self_consistency", "self_consistency_acc", "CLSP_acc", "autocap_auxiliary", "raw", "autocap", "origin", "translate_to_EN"}
-
-        def chunks(lst, n):
-            for i in range(0, len(lst), n):
-                yield i, lst[i:i+n]   # 返回 (batch_start_id, batch_items)
 
         for lang_id, queries in tqdm(enumerate(language_query_set),
                                     total=len(language_query_set),
                                     desc="Processing language queries"):
-            if mode == "autocap_auxiliary" and lang_id > 0:
-                break
-            if (mode == "translate_to_EN" or mode == "translate_to_EN_sc") and (lang_id == 3 or lang_id < 2):
-                continue
-
-            if mode in BATCH_MODES:
-                if mode == "CLSP_acc":
-                    queries = [queries[i] for i in range(len(queries)) if i % 10 == 1]
-                for batch_start_id, batch in tqdm(list(chunks(queries, BATCH)),
-                                                total=(len(queries) + BATCH - 1) // BATCH,
-                                                desc="Processing language query"):
-
-                    # 把这个 batch 里的 queries_sample 拼起来
-                    query_all = [x for queries_sample in batch for x in queries_sample]
-
-                    self._inference(
-                        query_id=batch_start_id,
-                        lang_id=lang_id,
-                        queries=query_all,
-                        ms_component=ms_components,
-                        gamma_component=gamma_components,
-                        mode=mode,
-                        diff=diff,
-                        group_id=group_id,
-                        max_token_nums=max_token_nums,
-                        lamda=lamda,
-                        seed=seed,
-                        prune_ratio=prune_ratio,
-                        window_size_scaling=window_size_scaling,
-                        sampling_size=sampling_size,
-                        dataset = dataset
-                    )
-            else:
                 for query_id, queries_sample in tqdm(enumerate(queries),
                                                     total=len(queries),
                                                     desc="Processing language query"):
-                    if mode in ["CLSP_cost", "autocap_cost", "self_consistency_cost", "ours", "CLSP_acc", "translate_to_EN_sc"] and query_id % 100 != 1:
+                    if mode in ["CLSP_cost", "autocap_cost", "self_consistency_cost", "ours", "CLSP_acc"] and query_id % 100 != 1:
                         continue
                     self._inference(
                         query_id=query_id,
@@ -275,8 +227,6 @@ class ModelInference():
             """Process a single vLLM output for offline mode - stores full confidence array"""
             text = output.text
             if not is_seq_early_stop:
-                if mode == "self_consistency" or mode == "self_consistency_acc" or mode == "CLSP_acc"  or mode == "autocap_auxiliary" or mode== "raw" or mode == "autocap" or mode == "translate_to_EN":
-                    query_id = (seq_id // sampling_size) + query_id
                 self.save_result(
                 text = text,
                 messages = messages,
@@ -335,67 +285,11 @@ class ModelInference():
                 texts.append(text)
                 sample_lang_ids.append(int(query['lang_id']))
                 messages.append(message)
-        elif mode == "autocap_auxiliary":
-            for i, query in enumerate(queries):
-                lang_name_contraction = list(self.lang_dict.keys())[int(query['lang_id'])]
-                # Construct the system instruction
-                instruction = f"""
-                You are an expert in multilingual understanding and cross-lingual reasoning.
-
-                Your task: Given a sample written in a **{lang_name_contraction}**, select **9 OTHER languages** (cross-lingual) that are optimal to support reasoning transfer for this sample.
-
-                IMPORTANT CONSTRAINTS:
-                - You MUST do **cross-lingual** selection: **do NOT select the same language as the source language**.
-                - If the source language appears in the Language Options list, it is **ineligible** and must be excluded.
-                - Select languages only from the provided Language Options.
-
-                Selection criteria:
-                - Prioritize linguistic proximity and transferability using **language family / branch / typology**.
-
-
-                Make brief step-by-step instructions:
-                1. **Infer Source Language**: Identify the most likely source language of the sample (choose one label from the Language Options). State it explicitly.
-                2. **Selection Rationale**: Choose **at least three eligible target languages** (excluding the source language). Briefly justify each choice using family/branch/typology (and optionally affinity proxy: High/Medium/Low).
-                3. **Alignment Score**: For each selected target language, assign an **alignment_score ∈ [0, 1]** reflecting compatibility for cross-lingual reasoning transfer, primarily from family/branch proximity (and optionally affinity proxy).
-                4. **Center Language**: Designate **exactly one** selected target language as the pivot (**center=True**). All others must be **center=False**.
-                5. **Conclusion Output (STRICT FORMAT)**: Output ONLY the following JSON-like line (no extra text), exactly in this format:
-
-                Target Language=[{{"language":"L1","alignment_score":S1,"center":true/false}},{{...}}]
-
-                Language Options:
-                - Arabic: Afro-Asiatic, Semitic
-                - Bengali: Indo-European, Indo-Aryan
-                - German: Indo-European, Germanic
-                - English: Indo-European, Germanic
-                - Spanish: Indo-European, Romance
-                - French: Indo-European, Romance
-                - Indonesian: Austronesian, Malayo-Polynesian
-                - Italian: Indo-European, Romance
-                - Japanese: Japonic, Japanese
-                - Korean: Koreanic, Korean
-                - Malay: Austronesian, Malayo-Polynesian
-                - Portuguese: Indo-European, Romance
-                - Russian: Indo-European, Slavic
-                - Swahili: Niger-Congo, Bantu
-                - Telugu: Dravidian, South-Central Dravidian
-                - Chinese: Sino-Tibetan, Sinitic
-
-                Sample:
-                {query['text']}
-                """
-
-                # Apply chat template
-                message = [{"role": "user", "content": instruction}]
-                text = self.tokenizer.apply_chat_template(message, tokenize=False, add_generation_prompt=True)
-                texts.append(text)
-                sample_lang_ids.append(int(query['lang_id']))
-                messages.append(message)
         else:
             
             for i, query in enumerate(queries):
                 lang_name = list(self.lang_dict.values())[int(query['lang_id'])]
-                if mode == "translate_to_EN" or mode == "translate_to_EN_sc":
-                    lang_name = "English"
+
                 # Construct the system instruction
                 if dataset == "polymath":
                     instruction = f"""
@@ -495,15 +389,10 @@ class ModelInference():
                 f"inference_data_all_{group_id}.jsonl"
             )          
         else:
-            # JSONL 文件路径
             output_file = os.path.join(
                 self.output + f"{diff}/{lang_id}/",
                 f"inference_data_all_{group_id}.jsonl"
             )
-
-        # 确保文件夹存在
         os.makedirs(os.path.dirname(output_file), exist_ok=True)
-
-        # 追加写入 JSONL
         with open(output_file, 'a', encoding='utf-8') as f:
             f.write(json.dumps(data_to_save, ensure_ascii=False) + "\n")

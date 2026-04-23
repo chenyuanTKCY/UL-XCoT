@@ -8,7 +8,6 @@ Many one-off sweeps and machine-specific variants were removed before release.
 - `infer.sh`: main UL-XCoT inference entry on PolyMath
 - `CLSP_acc.sh`: representative CLSP baseline
 - `self_consistency.sh`: representative self-consistency baseline
-- `translate_to_EN.sh`: translate-to-English baseline
 - `infer_MMLU.sh`: MMLU evaluation entry
 - `get_assislan.sh`: routing / candidate-language generation
 - `get_acc.sh`: answer evaluation, requires `OPENAI_API_KEY`

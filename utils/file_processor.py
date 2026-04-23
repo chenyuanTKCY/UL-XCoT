@@ -100,8 +100,6 @@ def read_polymath(mode:str = "sample", diff:str = "low", translate_to_en:bool = 
         #     language_sample_dir = "./dataset/polymath/translate/"
         for lang_id, lang_name in enumerate(polymath_LANG_LIST):
             file_path = language_sample_dir + f"/{lang_name}/{diff}.tsv"
-            if translate_to_en and lang_id != 3:
-                file_path = "./dataset/polymath/translate/" + f"/{lang_name}/{diff}.tsv"
             language_query_set = read_file_line_by_line(lang_id, file_path)
             if mode == "sample_single":
                 new_language_query_set = [row for row in language_query_set]
