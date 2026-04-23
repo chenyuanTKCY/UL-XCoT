@@ -4,6 +4,8 @@
 # @when : Winter Semester 2025/2026
 # @where : Harbin Institute of Technology
 # @title : Hook vllm and process early stopping 
+# @reference: https://github.com/facebookresearch/deepconf/blob/main/deepconf/processors.py
+# https://github.com/Alsace08/Chain-of-Embedding
 # @component: utils
 # @file : early_stop.py
 #

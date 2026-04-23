@@ -1,4 +1,14 @@
-
+########################################################################
+#
+# @author : Chenyuan Zhang
+# @when : Winter Semester 2025/2026
+# @where : Harbin Institute of Technology
+# @title : Use model or api to get hidden states
+# @component: utils
+# @Source: https://github.com/facebookresearch/deepconf/blob/main/deepconf/outputs.py
+# @file : hidden_states_getter.py
+#
+########################################################################
 
 from dataclasses import dataclass, field
 from datetime import datetime
