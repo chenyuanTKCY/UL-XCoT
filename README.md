@@ -4,7 +4,7 @@
 
 ### An Efficient Unified Logic Cross-lingual Chain-of-Thought Reasoning Framework
 
-[![Paper](https://img.shields.io/badge/Paper-PDF-B31B1B?style=for-the-badge)](paper/3459_Less_Languages_Less_Token.pdf)
+[![Paper](https://img.shields.io/badge/Paper-PDF-B31B1B?style=for-the-badge)]([paper/3459_Less_Languages_Less_Token.pdf](https://arxiv.org/pdf/2604.20090))
 ![Version](https://img.shields.io/badge/Version-v1.0-2F6BFF?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Status-Public%20Release-0A7F5A?style=for-the-badge)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
