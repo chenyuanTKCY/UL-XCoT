@@ -27,10 +27,10 @@ PRUNING_RATE=0.4
 MODEL_NAME="new_RL-qwen-7B_correct"
 MODEL_PATH="${MODEL_PATH:-${ULXCOT_MODEL_PATH:-deepseek-ai/DeepSeek-R1-Distill-Qwen-7B}}"
 
-MAX_TOKEN_NUMS=5120
+MAX_TOKEN_NUMS=2048
 OUTPUT_PATH="./dataset/polymath/${MODEL_NAME}_${TEMPERATURE}_${TOP_P}/${TEST_MODE}/fix/"
 
-for QUERY_DIFF in high
+for QUERY_DIFF in low
 do
 # Run Python script
 echo "Running process_query.py..."

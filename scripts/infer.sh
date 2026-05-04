@@ -30,9 +30,7 @@ PRUNING_RATE=0.7
 
 declare -A MAX_TOKEN_NUMS_dict
 MAX_TOKEN_NUMS_dict["low"]=2048
-MAX_TOKEN_NUMS_dict["medium"]=4096
-MAX_TOKEN_NUMS_dict["high"]=5120
-MAX_TOKEN_NUMS_dict["top"]=10240
+
 OUTPUT_PATH="./dataset/polymath/${MODEL_NAME}_${TEMPERATURE}_${TOP_P}/${TEST_MODE}/layer4/"
 
 for QUERY_DIFF in low
