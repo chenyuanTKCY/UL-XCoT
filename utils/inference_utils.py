@@ -102,8 +102,6 @@ class ModelInference():
                 for query_id, queries_sample in tqdm(enumerate(queries),
                                                     total=len(queries),
                                                     desc="Processing language query"):
-                    if mode in ["CLSP_cost", "autocap_cost", "self_consistency_cost", "ours", "CLSP_acc"] and query_id % 100 != 1:
-                        continue
                     self._inference(
                         query_id=query_id,
                         lang_id=lang_id,
